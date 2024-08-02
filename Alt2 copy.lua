@@ -931,7 +931,6 @@ local function levenshteinDistance(s, t)
     return d[m][n]
 end
 
--- Orbit Command
 local function orbitCommand(executor, radius)
     states.orbit = true
     local found = index()
@@ -941,18 +940,20 @@ local function orbitCommand(executor, radius)
             coroutine.wrap(function()
                 while states.orbit do
                     local angle = (2 * math.pi / #found) * i + tick() * 2 -- Adjust the speed by modifying the multiplier of tick()
-                    local offset = Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
-                    local targetCFrame = executor.Character.HumanoidRootPart.CFrame * CFrame.new(offset)
-                    bot.Character.Humanoid:MoveTo(targetCFrame.Position)
-                    bot.Character.HumanoidRootPart.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
+                    local offset = Vector3.new(math.cos(angle) * radius, 5, math.sin(angle) * radius) -- 5 is the height at which bots will fly
+                    local targetPosition = executor.Character.HumanoidRootPart.Position + offset
                     
-                    -- Make the alts fly
+                    local bodyPosition = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") or Instance.new("BodyPosition", bot.Character.HumanoidRootPart)
+                    bodyPosition.Position = targetPosition
+                    bodyPosition.D = 9e9
+                    bodyPosition.P = 9e9
+                    bodyPosition.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+
                     local bodyGyro = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", bot.Character.HumanoidRootPart)
-                    local bodyVelocity = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", bot.Character.HumanoidRootPart)
-                    
                     bodyGyro.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
-                    bodyVelocity.Velocity = Vector3.new(0, 5, 0) -- Adjust the Y value to change the flying height
-                    
+                    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                    bodyGyro.P = 9e9
+
                     wait(0.1)
                 end
                 
@@ -960,8 +961,8 @@ local function orbitCommand(executor, radius)
                 if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") then
                     bot.Character.HumanoidRootPart.BodyGyro:Destroy()
                 end
-                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyVelocity") then
-                    bot.Character.HumanoidRootPart.BodyVelocity:Destroy()
+                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") then
+                    bot.Character.HumanoidRootPart.BodyPosition:Destroy()
                 end
             end)()
         end
