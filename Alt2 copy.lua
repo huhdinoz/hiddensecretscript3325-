@@ -15,6 +15,7 @@ local enableOffset = Config["enableOffset"] or getgenv().Config["enableOffset"]
 -- Services
 local distance = 10
 local angle = math.pi / 2
+local orbitSpeed = 2 -- Default orbit speed
 getgenv().isOrbiting = false
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
@@ -935,15 +936,16 @@ local function levenshteinDistance(s, t)
     return d[m][n]
 end
 
-local function orbit(user)
+local function orbit(user, speed)
     getgenv().isOrbiting = true
+    orbitSpeed = speed or 1 -- Use the provided speed or default to 1
 
     if not user then
         return
     else
         coroutine.wrap(function()
             while getgenv().isOrbiting do
-                local angular = tick() * angle
+                local angular = tick() * angle * orbitSpeed
                 local center = user.Character.HumanoidRootPart.Position
 
                 for i, accountID in ipairs(accounts) do
@@ -959,11 +961,16 @@ local function orbit(user)
                         botRootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
                     end
                 end
-                wait(0.1)
+                wait(0.03) -- Smaller wait time for smoother movement
             end
         end)()
     end
 end
+
+local function stopOrbit()
+    getgenv().isOrbiting = false
+end
+
 
 local function stopOrbit()
     getgenv().isOrbiting = false
@@ -1138,8 +1145,10 @@ local function handleCommand(text, senderUserId)
             sendWebhookLog("Nap command executed by User: " .. executor.Name)
         elseif command == ".orbit" then
             stopAllMovements()
-            orbit(getPlayer(args, executor))
-            sendWebhookLog("Orbit command executed by User: " .. executor.Name)
+            local targetName, speed = args:match("^(%S+)%s*(%d*)$")
+            local target = getPlayer(targetName, executor)
+            orbit(target, tonumber(speed) or 1)
+            sendWebhookLog("Orbit command executed by User: " .. executor.Name .. " with speed: " .. (tonumber(speed) or 1))
         else
             Chat("Unknown command: " .. command)
             sendWebhookLog("Unknown command: " .. command .. " by User: " .. executor.Name)
@@ -1151,6 +1160,7 @@ local function handleCommand(text, senderUserId)
         sendWebhookLog("Error executing command: " .. command .. " with args: " .. args .. " by User: " .. executor.Name .. " - Error: " .. tostring(errorMessage))
     end
 end
+
 
 -- Store connections for cleanup
 local connections = {}
