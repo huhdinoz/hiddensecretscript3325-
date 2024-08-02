@@ -1141,12 +1141,32 @@ local function handleCommand(text, senderUserId)
     end
 end
 
--- Chat detection and command handling
+-- Replace this part in your script
+Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(txt)
+        local senderUserId = player.UserId
+        handleCommand(txt:lower(), senderUserId)
+    end)
+end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    player.Chatted:Connect(function(txt)
+        local senderUserId = player.UserId
+        handleCommand(txt:lower(), senderUserId)
+    end)
+end
+
+
+
+-- Store connections for cleanup
+local connections = {}
+
 local function connectPlayerChat(player)
     if player then
-        player.Chatted:Connect(function(txt)
+        local conn = player.Chatted:Connect(function(txt)
             handleCommand(txt:lower(), player.UserId)
         end)
+        table.insert(connections, conn)
     end
 end
 
@@ -1156,8 +1176,17 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 -- Connect to new players
-Players.PlayerAdded:Connect(function(player)
+local playerAddedConn = Players.PlayerAdded:Connect(function(player)
     connectPlayerChat(player)
+end)
+table.insert(connections, playerAddedConn)
+
+-- Clean up connections on game exit
+game:BindToClose(function()
+    for _, conn in ipairs(connections) do
+        conn:Disconnect()
+    end
+    connections = {}
 end)
 
 
@@ -1183,19 +1212,10 @@ end
 local function initialize()
     local initStartTime = tick()
     local targetPlayer = Players:FindFirstChild(tar)
-    connectPlayerChat(targetPlayer)
-
-    Players.PlayerAdded:Connect(function(player)
-        if player.Name == tar then
-            connectPlayerChat(player)
-        end
-    end)
-
     local initEndTime = tick()
     Chat("Account Manager loaded in " .. string.format("%.2f", initEndTime - initStartTime) .. " seconds.")
 
     if model then
-        connectPlayerChat(model)
         initializeBot(model) -- Initialize the bot when the model is connected
     else
         Chat("Host not found initially. Scanning for host's new game location...")
