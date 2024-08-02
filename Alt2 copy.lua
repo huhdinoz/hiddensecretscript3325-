@@ -1141,13 +1141,25 @@ local function handleCommand(text, senderUserId)
     end
 end
 
--- Replace this part in your script
+-- Chat detection and command handling
+local function connectPlayerChat(player)
+    if player then
+        player.Chatted:Connect(function(txt)
+            handleCommand(txt:lower(), player.UserId)
+        end)
+    end
+end
+
+-- Connect to existing players
+for _, player in ipairs(Players:GetPlayers()) do
+    connectPlayerChat(player)
+end
+
+-- Connect to new players
 Players.PlayerAdded:Connect(function(player)
-    player.Chatted:Connect(function(txt)
-        local senderUserId = player.UserId
-        handleCommand(txt:lower(), senderUserId)
-    end)
+    connectPlayerChat(player)
 end)
+
 
 for _, player in ipairs(Players:GetPlayers()) do
     player.Chatted:Connect(function(txt)
@@ -1194,11 +1206,25 @@ local function initialize()
     local targetPlayer = Players:FindFirstChild(tar)
     connectPlayerChat(targetPlayer)
 
-    Players.PlayerAdded:Connect(function(player)
-        if player.Name == tar then
-            connectPlayerChat(player)
-        end
-    end)
+    -- Chat detection and command handling
+local function connectPlayerChat(player)
+    if player then
+        player.Chatted:Connect(function(txt)
+            handleCommand(txt:lower(), player.UserId)
+        end)
+    end
+end
+
+-- Connect to existing players
+for _, player in ipairs(Players:GetPlayers()) do
+    connectPlayerChat(player)
+end
+
+-- Connect to new players
+Players.PlayerAdded:Connect(function(player)
+    connectPlayerChat(player)
+end)
+
 
     local initEndTime = tick()
     Chat("Account Manager loaded in " .. string.format("%.2f", initEndTime - initStartTime) .. " seconds.")
