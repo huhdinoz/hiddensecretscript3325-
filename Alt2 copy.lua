@@ -931,34 +931,29 @@ local function levenshteinDistance(s, t)
     return d[m][n]
 end
 
--- Reworked Orbit Command
-local function orbitCommand(executor, radius)
-    states.orbit = true
-    local found = index()
-    for i, index in ipairs(found) do
-        local bot = Players:GetPlayerByUserId(accounts[index])
-        if bot then
-            coroutine.wrap(function()
-                while states.orbit do
-                    local angle = (2 * math.pi / #found) * i + tick() * 0.5 -- Adjust the speed by modifying the multiplier of tick()
-                    local offset = Vector3.new(math.cos(angle) * radius, 5, math.sin(angle) * radius) -- 5 is the height at which bots will fly
-                    local targetPosition = executor.Character.HumanoidRootPart.Position + offset
+local function orbit(user)
+    getgenv().isOrbiting = true
 
-                    local bodyPosition = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") or Instance.new("BodyPosition", bot.Character.HumanoidRootPart)
-                    bodyPosition.Position = targetPosition
-                    bodyPosition.D = 9e9
-                    bodyPosition.P = 9e9
-                    bodyPosition.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
-                    wait(0.1)
+    if not user then
+        return
+    else
+        coroutine.wrap(function()
+            while wait() do
+                if not getgenv().isOrbiting then
+                    break
                 end
 
-                -- Cleanup after stopping orbit
-                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") then
-                    bot.Character.HumanoidRootPart.BodyPosition:Destroy()
-                end
-            end)()
-        end
+                local angular = tick() * angle
+                local center = user.Character.HumanoidRootPart.Position
+
+                local x = center.X + distance * math.cos(angular)
+                local y = center.Y
+                local z = center.Z + distance * math.sin(angular)
+
+                rootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
+                rootPart.CFrame = CFrame.new(rootPart.Position, center)
+            end
+        end)()
     end
 end
 
