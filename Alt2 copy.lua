@@ -1158,15 +1158,11 @@ end
 
 
 
--- Store connections for cleanup
-local connections = {}
-
 local function connectPlayerChat(player)
     if player then
         local conn = player.Chatted:Connect(function(txt)
             handleCommand(txt:lower(), player.UserId)
         end)
-        table.insert(connections, conn)
     end
 end
 
@@ -1178,15 +1174,6 @@ end
 -- Connect to new players
 local playerAddedConn = Players.PlayerAdded:Connect(function(player)
     connectPlayerChat(player)
-end)
-table.insert(connections, playerAddedConn)
-
--- Clean up connections on game exit
-game:BindToClose(function()
-    for _, conn in ipairs(connections) do
-        conn:Disconnect()
-    end
-    connections = {}
 end)
 
 
