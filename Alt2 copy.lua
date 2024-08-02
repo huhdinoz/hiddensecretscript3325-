@@ -1,4 +1,4 @@
-wait(1)
+wait()
 -- Configuration Section
 local host = Config["host"] or getgenv().Config["host"]
 local tar = Config["tar"] or getgenv().Config["tar"]
@@ -911,11 +911,12 @@ local commandsList = {
     ".test", ".rejoin", ".bring", ".tp", ".line", ".index", ".end", ".reset",
     ".say", ".follow", ".unfollow", ".circle", ".followc", ".lookatme",
     ".hostile", ".hradius", ".jump", ".grant", ".revoke", ".move", ".drop",
-    ".spin", ".stopspin", ".stack", ".stopstack"
+    ".spin", ".stopspin", ".stack", ".stopstack", ".sit", ".tpto", ".walkto",
+    ".nap, .orbit"
 }
 
 local function levenshteinDistance(s, t)
-    local m, n = #s, #t
+    local m, n = #s, #t//
     local d = {}
 
     for i = 0, m do
