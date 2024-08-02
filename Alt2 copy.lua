@@ -942,7 +942,7 @@ local function orbitCommand(executor, radius)
                     local angle = (2 * math.pi / #found) * i + tick() * 2 -- Adjust the speed by modifying the multiplier of tick()
                     local offset = Vector3.new(math.cos(angle) * radius, 5, math.sin(angle) * radius) -- 5 is the height at which bots will fly
                     local targetPosition = executor.Character.HumanoidRootPart.Position + offset
-                    
+
                     local bodyPosition = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") or Instance.new("BodyPosition", bot.Character.HumanoidRootPart)
                     bodyPosition.Position = targetPosition
                     bodyPosition.D = 9e9
@@ -956,7 +956,7 @@ local function orbitCommand(executor, radius)
 
                     wait(0.1)
                 end
-                
+
                 -- Cleanup after stopping orbit
                 if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") then
                     bot.Character.HumanoidRootPart.BodyGyro:Destroy()
