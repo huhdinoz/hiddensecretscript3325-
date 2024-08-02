@@ -565,6 +565,7 @@ end
 
 local function stopMoveCommand()
     states.move = false
+    states.orbit = false -- Stop the orbit command
     currentMoveDirection = nil -- Reset the current move direction
     for _, bodyPos in ipairs(bodyPositions) do
         bodyPos:Destroy()
@@ -582,6 +583,7 @@ local function stopMoveCommand()
         end
     end
 end
+
 
 local function moveCommand(direction, executor)
     if direction ~= currentMoveDirection then
@@ -943,7 +945,23 @@ local function orbitCommand(executor, radius)
                     local targetCFrame = executor.Character.HumanoidRootPart.CFrame * CFrame.new(offset)
                     bot.Character.Humanoid:MoveTo(targetCFrame.Position)
                     bot.Character.HumanoidRootPart.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
+                    
+                    -- Make the alts fly
+                    local bodyGyro = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", bot.Character.HumanoidRootPart)
+                    local bodyVelocity = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", bot.Character.HumanoidRootPart)
+                    
+                    bodyGyro.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
+                    bodyVelocity.Velocity = Vector3.new(0, 5, 0) -- Adjust the Y value to change the flying height
+                    
                     wait(0.1)
+                end
+                
+                -- Cleanup after stopping orbit
+                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") then
+                    bot.Character.HumanoidRootPart.BodyGyro:Destroy()
+                end
+                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyVelocity") then
+                    bot.Character.HumanoidRootPart.BodyVelocity:Destroy()
                 end
             end)()
         end
@@ -1131,7 +1149,6 @@ local function handleCommand(text, senderUserId)
         sendWebhookLog("Error executing command: " .. command .. " with args: " .. args .. " by User: " .. executor.Name .. " - Error: " .. tostring(errorMessage))
     end
 end
-
 
 -- Store connections for cleanup
 local connections = {}
