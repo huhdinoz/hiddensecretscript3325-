@@ -1,4 +1,4 @@
-wait(1)
+wait()
 -- Configuration Section
 local host = Config["host"] or getgenv().Config["host"]
 local tar = Config["tar"] or getgenv().Config["tar"]
@@ -976,7 +976,7 @@ local commandsList = {
     ".say", ".follow", ".unfollow", ".circle", ".followc", ".lookatme",
     ".hostile", ".hradius", ".jump", ".grant", ".revoke", ".move", ".drop",
     ".spin", ".stopspin", ".stack", ".stopstack", ".sit", ".tpto", ".walkto",
-    ".nap, .orbit"
+    ".nap", ".orbit"
 }
 
 local function handleCommand(text, senderUserId)
