@@ -13,10 +13,11 @@ local correctionThreshold = Config["correctionThreshold"] or getgenv().Config["c
 local enableOffset = Config["enableOffset"] or getgenv().Config["enableOffset"]
 
 -- Services
-local distance = 10
-local angle = math.pi / 2
-local orbitSpeed = 2 -- Default orbit speed
+local distance = 5
+local angle = math.pi  2
+local orbitSpeed = 1 -- Default orbit speed
 getgenv().isOrbiting = false
+local floatHeight = 5 -- Height at which bots will float while orbiting
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -955,7 +956,7 @@ local function orbit(user, speed)
 
                         local botAngle = angular + (2 * math.pi / #accounts) * i
                         local x = center.X + distance * math.cos(botAngle)
-                        local y = center.Y
+                        local y = center.Y + floatHeight -- Float 5 studs higher
                         local z = center.Z + distance * math.sin(botAngle)
 
                         botRootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
@@ -966,6 +967,11 @@ local function orbit(user, speed)
         end)()
     end
 end
+
+local function stopOrbit()
+    getgenv().isOrbiting = false
+end
+
 
 local function stopOrbit()
     getgenv().isOrbiting = false
