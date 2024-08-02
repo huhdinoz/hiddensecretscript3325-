@@ -1189,8 +1189,6 @@ game:BindToClose(function()
     connections = {}
 end)
 
-
-
 local function initializeBot(executor)
     local found = index()
     for i, index in ipairs(found) do
@@ -1209,15 +1207,17 @@ local function initializeBot(executor)
     end
 end
 
-
 local function initialize()
     local initStartTime = tick()
     local targetPlayer = Players:FindFirstChild(tar)
+    connectPlayerChat(targetPlayer)  -- Ensure the target player is connected
+
     local initEndTime = tick()
     Chat("Account Manager loaded in " .. string.format("%.2f", initEndTime - initStartTime) .. " seconds.")
 
     if model then
-        initializeBot(model) -- Initialize the bot when the model is connected
+        connectPlayerChat(model)  -- Ensure the model player is connected
+        initializeBot(model)  -- Initialize the bot when the model is connected
     else
         Chat("Host not found initially. Scanning for host's new game location...")
         scanForHost()
