@@ -169,7 +169,9 @@ local function returnCommand()
 end
 
 local function rejoinCommand()
-    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
+    local gameId = game.PlaceId
+    local jobId = game.JobId
+    TeleportService:TeleportToPlaceInstance(gameId, jobId, localPlayer)
 end
 
 local function bringCommand(executor, direction)
@@ -907,16 +909,8 @@ local function extractQuotedArgument(args)
     return args, ""
 end
 
-local commandsList = {
-    ".test", ".rejoin", ".bring", ".tp", ".line", ".index", ".end", ".reset",
-    ".say", ".follow", ".unfollow", ".circle", ".followc", ".lookatme",
-    ".hostile", ".hradius", ".jump", ".grant", ".revoke", ".move", ".drop",
-    ".spin", ".stopspin", ".stack", ".stopstack", ".sit", ".tpto", ".walkto",
-    ".nap, .orbit"
-}
-
 local function levenshteinDistance(s, t)
-    local m, n = #s, #t//
+    local m, n = #s, #t
     local d = {}
 
     for i = 0, m do
@@ -1140,21 +1134,6 @@ local function handleCommand(text, senderUserId)
     end
 end
 
--- Replace this part in your script
-Players.PlayerAdded:Connect(function(player)
-    player.Chatted:Connect(function(txt)
-        local senderUserId = player.UserId
-        handleCommand(txt:lower(), senderUserId)
-    end)
-end)
-
-for _, player in ipairs(Players:GetPlayers()) do
-    player.Chatted:Connect(function(txt)
-        local senderUserId = player.UserId
-        handleCommand(txt:lower(), senderUserId)
-    end)
-end
-
 
 -- Store connections for cleanup
 local connections = {}
@@ -1209,7 +1188,6 @@ end
 local function initialize()
     local initStartTime = tick()
     local targetPlayer = Players:FindFirstChild(tar)
-    connectPlayerChat(targetPlayer)  -- Ensure the target player is connected
 
     local initEndTime = tick()
     Chat("Account Manager loaded in " .. string.format("%.2f", initEndTime - initStartTime) .. " seconds.")
