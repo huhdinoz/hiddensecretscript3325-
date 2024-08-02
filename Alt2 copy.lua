@@ -13,6 +13,9 @@ local correctionThreshold = Config["correctionThreshold"] or getgenv().Config["c
 local enableOffset = Config["enableOffset"] or getgenv().Config["enableOffset"]
 
 -- Services
+local distance = 10
+local angle = math.pi / 2
+getgenv().isOrbiting = false
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -566,6 +569,7 @@ end
 local function stopMoveCommand()
     states.move = false
     states.orbit = false -- Stop the orbit command
+    getgenv().isOrbiting = false -- Ensure the orbit command is stopped
     currentMoveDirection = nil -- Reset the current move direction
     for _, bodyPos in ipairs(bodyPositions) do
         bodyPos:Destroy()
@@ -938,29 +942,31 @@ local function orbit(user)
         return
     else
         coroutine.wrap(function()
-            while wait() do
-                if not getgenv().isOrbiting then
-                    break
-                end
-
+            while getgenv().isOrbiting do
                 local angular = tick() * angle
                 local center = user.Character.HumanoidRootPart.Position
 
-                for _, accountID in ipairs(accounts) do
-                    local bot = players:GetPlayerByUserId(accountID)
+                for i, accountID in ipairs(accounts) do
+                    local bot = Players:GetPlayerByUserId(accountID)
                     if bot and bot.Character and bot.Character:FindFirstChild("HumanoidRootPart") then
                         local botRootPart = bot.Character.HumanoidRootPart
 
-                        local x = center.X + distance * math.cos(angular)
+                        local botAngle = angular + (2 * math.pi / #accounts) * i
+                        local x = center.X + distance * math.cos(botAngle)
                         local y = center.Y
-                        local z = center.Z + distance * math.sin(angular)
+                        local z = center.Z + distance * math.sin(botAngle)
 
                         botRootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
                     end
                 end
+                wait(0.1)
             end
         end)()
     end
+end
+
+local function stopOrbit()
+    getgenv().isOrbiting = false
 end
 
 
@@ -1132,7 +1138,7 @@ local function handleCommand(text, senderUserId)
             sendWebhookLog("Nap command executed by User: " .. executor.Name)
         elseif command == ".orbit" then
             stopAllMovements()
-            orbitCommand(executor, tonumber(args) or 5)
+            orbit(getPlayer(args, executor))
             sendWebhookLog("Orbit command executed by User: " .. executor.Name)
         else
             Chat("Unknown command: " .. command)
