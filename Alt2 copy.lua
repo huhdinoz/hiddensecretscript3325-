@@ -946,12 +946,18 @@ local function orbit(user)
                 local angular = tick() * angle
                 local center = user.Character.HumanoidRootPart.Position
 
-                local x = center.X + distance * math.cos(angular)
-                local y = center.Y
-                local z = center.Z + distance * math.sin(angular)
+                for _, accountID in ipairs(accounts) do
+                    local bot = players:GetPlayerByUserId(accountID)
+                    if bot and bot.Character and bot.Character:FindFirstChild("HumanoidRootPart") then
+                        local botRootPart = bot.Character.HumanoidRootPart
 
-                rootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
-                rootPart.CFrame = CFrame.new(rootPart.Position, center)
+                        local x = center.X + distance * math.cos(angular)
+                        local y = center.Y
+                        local z = center.Z + distance * math.sin(angular)
+
+                        botRootPart.CFrame = CFrame.new(Vector3.new(x, y, z))
+                    end
+                end
             end
         end)()
     end
