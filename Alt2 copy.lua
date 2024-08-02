@@ -1,5 +1,3 @@
-
-
 wait()
 -- Configuration Section
 local host = Config["host"] or getgenv().Config["host"]
@@ -940,6 +938,27 @@ local function levenshteinDistance(s, t)
     return d[m][n]
 end
 
+-- Orbit Command
+local function orbitCommand(executor, radius)
+    states.orbit = true
+    local found = index()
+    for i, index in ipairs(found) do
+        local bot = Players:GetPlayerByUserId(accounts[index])
+        if bot then
+            coroutine.wrap(function()
+                while states.orbit do
+                    local angle = (2 * math.pi / #found) * i + tick() * 2 -- Adjust the speed by modifying the multiplier of tick()
+                    local offset = Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+                    local targetCFrame = executor.Character.HumanoidRootPart.CFrame * CFrame.new(offset)
+                    bot.Character.Humanoid:MoveTo(targetCFrame.Position)
+                    bot.Character.HumanoidRootPart.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
+                    wait(0.1)
+                end
+            end)()
+        end
+    end
+end
+
 local function findClosestCommand(inputCommand, commandList)
     local closestCommand = nil
     local minDistance = math.huge
@@ -1106,6 +1125,10 @@ local function handleCommand(text, senderUserId)
         elseif command == ".nap" then
             napCommand()
             sendWebhookLog("Nap command executed by User: " .. executor.Name)
+        elseif command == ".orbit" then
+            stopAllMovements()
+            orbitCommand(executor, tonumber(args) or 5)
+            sendWebhookLog("Orbit command executed by User: " .. executor.Name)
         else
             Chat("Unknown command: " .. command)
             sendWebhookLog("Unknown command: " .. command .. " by User: " .. executor.Name)
@@ -1117,7 +1140,6 @@ local function handleCommand(text, senderUserId)
         sendWebhookLog("Error executing command: " .. command .. " with args: " .. args .. " by User: " .. executor.Name .. " - Error: " .. tostring(errorMessage))
     end
 end
-
 
 -- Replace this part in your script
 Players.PlayerAdded:Connect(function(player)
