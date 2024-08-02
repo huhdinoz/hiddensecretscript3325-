@@ -1161,27 +1161,6 @@ Players.PlayerAdded:Connect(function(player)
 end)
 
 
-for _, player in ipairs(Players:GetPlayers()) do
-    player.Chatted:Connect(function(txt)
-        local senderUserId = player.UserId
-        handleCommand(txt:lower(), senderUserId)
-    end)
-end
-
-
-
-local function connectPlayerChat(player)
-    if player then
-        player.Chatted:Connect(function(txt)
-            handleCommand(txt:lower(), player, player.UserId)
-        end)
-    else
-        warn("Player not found: " .. tar)
-        Chat("Host not found. Scanning for host's new game location...")
-        scanForHost()
-    end
-end
-
 local function initializeBot(executor)
     local found = index()
     for i, index in ipairs(found) do
@@ -1206,25 +1185,11 @@ local function initialize()
     local targetPlayer = Players:FindFirstChild(tar)
     connectPlayerChat(targetPlayer)
 
-    -- Chat detection and command handling
-local function connectPlayerChat(player)
-    if player then
-        player.Chatted:Connect(function(txt)
-            handleCommand(txt:lower(), player.UserId)
-        end)
-    end
-end
-
--- Connect to existing players
-for _, player in ipairs(Players:GetPlayers()) do
-    connectPlayerChat(player)
-end
-
--- Connect to new players
-Players.PlayerAdded:Connect(function(player)
-    connectPlayerChat(player)
-end)
-
+    Players.PlayerAdded:Connect(function(player)
+        if player.Name == tar then
+            connectPlayerChat(player)
+        end
+    end)
 
     local initEndTime = tick()
     Chat("Account Manager loaded in " .. string.format("%.2f", initEndTime - initStartTime) .. " seconds.")
