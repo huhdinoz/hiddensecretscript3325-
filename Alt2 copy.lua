@@ -939,7 +939,7 @@ local function orbitCommand(executor, radius)
         if bot then
             coroutine.wrap(function()
                 while states.orbit do
-                    local angle = (2 * math.pi / #found) * i + tick() * 2 -- Adjust the speed by modifying the multiplier of tick()
+                    local angle = (2 * math.pi / #found) * i + tick() * 0.5 -- Adjust the speed by modifying the multiplier of tick()
                     local offset = Vector3.new(math.cos(angle) * radius, 5, math.sin(angle) * radius) -- 5 is the height at which bots will fly
                     local targetPosition = executor.Character.HumanoidRootPart.Position + offset
 
@@ -949,18 +949,10 @@ local function orbitCommand(executor, radius)
                     bodyPosition.P = 9e9
                     bodyPosition.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
-                    local bodyGyro = bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", bot.Character.HumanoidRootPart)
-                    bodyGyro.CFrame = CFrame.lookAt(bot.Character.HumanoidRootPart.Position, executor.Character.HumanoidRootPart.Position)
-                    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-                    bodyGyro.P = 9e9
-
                     wait(0.1)
                 end
 
                 -- Cleanup after stopping orbit
-                if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyGyro") then
-                    bot.Character.HumanoidRootPart.BodyGyro:Destroy()
-                end
                 if bot.Character.HumanoidRootPart:FindFirstChildOfClass("BodyPosition") then
                     bot.Character.HumanoidRootPart.BodyPosition:Destroy()
                 end
@@ -968,7 +960,6 @@ local function orbitCommand(executor, radius)
         end
     end
 end
-
 local function findClosestCommand(inputCommand, commandList)
     local closestCommand = nil
     local minDistance = math.huge
