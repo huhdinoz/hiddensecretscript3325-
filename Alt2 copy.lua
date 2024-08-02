@@ -1,4 +1,4 @@
-wait(1)
+wait()
 -- Configuration Section
 local host = Config["host"] or getgenv().Config["host"]
 local tar = Config["tar"] or getgenv().Config["tar"]
