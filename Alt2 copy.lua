@@ -931,6 +931,7 @@ local function levenshteinDistance(s, t)
     return d[m][n]
 end
 
+-- Reworked Orbit Command
 local function orbitCommand(executor, radius)
     states.orbit = true
     local found = index()
@@ -960,6 +961,8 @@ local function orbitCommand(executor, radius)
         end
     end
 end
+
+
 local function findClosestCommand(inputCommand, commandList)
     local closestCommand = nil
     local minDistance = math.huge
