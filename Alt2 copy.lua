@@ -169,9 +169,7 @@ local function returnCommand()
 end
 
 local function rejoinCommand()
-    local gameId = game.PlaceId
-    local jobId = game.JobId
-    TeleportService:TeleportToPlaceInstance(gameId, jobId, localPlayer)
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
 end
 
 local function bringCommand(executor, direction)
