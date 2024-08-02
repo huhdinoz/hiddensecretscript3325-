@@ -1,3 +1,15 @@
+local host = Config["host"] or getgenv().Config["host"]
+local tar = Config["tar"] or getgenv().Config["tar"]
+local accounts = Config["accounts"] or getgenv().Config["accounts"]
+local ROBLOSECURITY = Config["ROBLOSECURITY"] or getgenv().Config["ROBLOSECURITY"]
+local maxFollowDistance = Config["maxFollowDistance"] or getgenv().Config["maxFollowDistance"]
+local enableWebhookLogs = Config["enableWebhookLogs"] or getgenv().Config["enableWebhookLogs"]
+local webhookURL = Config["webhookURL"] or getgenv().Config["webhookURL"]
+local webhookUsername = Config["webhookUsername"] or getgenv().Config["webhookUsername"]
+local enableCommandCorrection = Config["enableCommandCorrection"] or getgenv().Config["enableCommandCorrection"]
+local correctionThreshold = Config["correctionThreshold"] or getgenv().Config["correctionThreshold"]
+local enableOffset = Config["enableOffset"] or getgenv().Config["enableOffset"]
+
 -- Services
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
