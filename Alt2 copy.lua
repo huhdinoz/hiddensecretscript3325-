@@ -1,3 +1,7 @@
+
+
+wait()
+-- Configuration Section
 local host = Config["host"] or getgenv().Config["host"]
 local tar = Config["tar"] or getgenv().Config["tar"]
 local accounts = Config["accounts"] or getgenv().Config["accounts"]
@@ -851,30 +855,6 @@ local function napCommand()
     end
 end
 
-local function hideCommand()
-    local found = index()
-    for _, index in ipairs(found) do
-        local bot = Players:GetPlayerByUserId(accounts[index])
-        if bot and bot.Character and bot.Character:FindFirstChild("HumanoidRootPart") then
-            bot.Character.Humanoid.PlatformStand = true
-            bot.Character.HumanoidRootPart.Anchored = true
-            bot.Character.HumanoidRootPart.CFrame = bot.Character.HumanoidRootPart.CFrame * CFrame.new(0, 100, 0)
-        end
-    end
-end
-
-local function unhideCommand()
-    local found = index()
-    for _, index in ipairs(found) do
-        local bot = Players:GetPlayerByUserId(accounts[index])
-        if bot and bot.Character and bot.Character:FindFirstChild("HumanoidRootPart") then
-            bot.Character.HumanoidRootPart.CFrame = bot.Character.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)
-            bot.Character.HumanoidRootPart.Anchored = false
-            bot.Character.Humanoid.PlatformStand = false
-        end
-    end
-end
-
 
 local function scanForHost()
     local scanDuration = 600 -- 10 minutes
@@ -979,13 +959,12 @@ local function findClosestCommand(inputCommand, commandList)
     end
 end
 
-
 local commandsList = {
     ".test", ".rejoin", ".bring", ".tp", ".line", ".index", ".end", ".reset",
     ".say", ".follow", ".unfollow", ".circle", ".followc", ".lookatme",
     ".hostile", ".hradius", ".jump", ".grant", ".revoke", ".move", ".drop",
     ".spin", ".stopspin", ".stack", ".stopstack", ".sit", ".tpto", ".walkto",
-    ".nap", ".hide", ".unhide"
+    ".nap"
 }
 
 local function handleCommand(text, senderUserId)
@@ -1127,12 +1106,6 @@ local function handleCommand(text, senderUserId)
         elseif command == ".nap" then
             napCommand()
             sendWebhookLog("Nap command executed by User: " .. executor.Name)
-        elseif command == ".hide" then
-            hideCommand()
-            sendWebhookLog("Hide command executed by User: " .. executor.Name)
-        elseif command == ".unhide" then
-            unhideCommand()
-            sendWebhookLog("Unhide command executed by User: " .. executor.Name)
         else
             Chat("Unknown command: " .. command)
             sendWebhookLog("Unknown command: " .. command .. " by User: " .. executor.Name)
@@ -1144,7 +1117,6 @@ local function handleCommand(text, senderUserId)
         sendWebhookLog("Error executing command: " .. command .. " with args: " .. args .. " by User: " .. executor.Name .. " - Error: " .. tostring(errorMessage))
     end
 end
-
 
 
 -- Replace this part in your script
