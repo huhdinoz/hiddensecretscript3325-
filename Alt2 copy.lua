@@ -1,4 +1,3 @@
-
 -- Services
 local TextChatService = game:GetService("TextChatService")
 local RunService = game:GetService("RunService")
