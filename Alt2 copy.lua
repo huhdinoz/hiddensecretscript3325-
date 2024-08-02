@@ -1157,7 +1157,6 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 
-
 -- Store connections for cleanup
 local connections = {}
 
@@ -1167,6 +1166,15 @@ local function connectPlayerChat(player)
             handleCommand(txt:lower(), player.UserId)
         end)
         connections[player] = conn
+
+        player.AncestryChanged:Connect(function(_, parent)
+            if not parent then
+                if connections[player] then
+                    connections[player]:Disconnect()
+                    connections[player] = nil
+                end
+            end
+        end)
     end
 end
 
@@ -1180,14 +1188,6 @@ local playerAddedConn = Players.PlayerAdded:Connect(function(player)
     connectPlayerChat(player)
 end)
 table.insert(connections, playerAddedConn)
-
--- Clean up connections on game exit
-game:BindToClose(function()
-    for _, conn in pairs(connections) do
-        conn:Disconnect()
-    end
-    connections = {}
-end)
 
 local function initializeBot(executor)
     local found = index()
